@@ -1,6 +1,7 @@
 from typing import Union, List
 from fastapi import FastAPI, Path, Query
 from pydantic import BaseModel
+from api import users, sections, courses
 
 app = FastAPI(
     title="Fast API",
@@ -16,28 +17,7 @@ app = FastAPI(
     }
 )
 
-users = []
-
-class User(BaseModel):
-    email: str
-    is_active: bool
-    bio: Union[str, None] = None
-
-@app.get("/users", response_model=List[User])
-async def get_users():
-    return users 
-
-@app.get("/users/{id}")
-async def get_user(
-    id: int = Path(..., description="ID of user to retrieve"),
-    q: str = None
-    ):
-    if q:
-        {"user": users[id], "query": q}
-    return {"user": users[id]}
-
-@app.post("/users")
-async def create_user(user: User):
-    users.append(user)
-    return "success"
+app.include_router(users.router)
+app.include_router(sections.router)
+app.include_router(courses.router)
 
